@@ -1,0 +1,37 @@
+# Standalone truncation-candidate rules for the answer repair workflow.
+# Edit this file directly to change scan and validation behaviour.
+
+[global]
+inputs_dir = "data/model_outputs"
+review_csv = "answer_repair/workspace/review_lists/truncation_candidates.csv"
+summary_csv = "answer_repair/workspace/manifests/truncation_candidate_summary.csv"
+selection_column = "manual_action"
+selection_true_values = ["retry", "rerun", "repair", "yes", "y", "true", "1"]
+answer_field = "answer"
+candidate_on_api_error = true
+candidate_on_finish_reason_length = true
+include_legacy_truncation_flag_as_signal = true
+legacy_flag_requires_extra_signal = true
+allow_emoji_terminal = true
+preview_chars = 240
+tail_chars = 220
+trim_right_chars = " \t\r\n\"'“”‘’`*_)]}）】〉》」』"
+obvious_cut_markers = ["**", "__", "```", "…", "..."]
+
+[languages.en]
+aliases = ["en", "en-us", "en-gb", "english"]
+always_candidate_chars_le = 100
+soft_review_chars_le = 220
+min_chars_for_terminal_check = 20
+sentence_end_chars = ".!?)\"]}'”’"
+suspicious_terminal_chars = ":;,([{/\\-—"
+max_last_fragment_words = 5
+
+[languages.zh]
+aliases = ["zh", "zh-cn", "zh-hans", "zh-hant", "chinese"]
+always_candidate_chars_le = 100
+soft_review_chars_le = 220
+min_chars_for_terminal_check = 12
+sentence_end_chars = "。！？）】〉》」』"
+suspicious_terminal_chars = "：；，、（【《「『/\\-—"
+max_last_fragment_chars = 8

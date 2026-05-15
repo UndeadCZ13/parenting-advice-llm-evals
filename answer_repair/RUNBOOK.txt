@@ -1,0 +1,123 @@
+ParentBench Answer Repair Runbook
+================================
+
+Current marked review file
+--------------------------
+answer_repair/workspace/review_lists/truncation_candidates.numbers
+
+The repair scripts now support both .csv and .numbers review files.
+If manual_action is marked as 1 in Numbers, it will be treated as selected.
+
+Recommended execution flow
+--------------------------
+
+Step 1. Export exact generation prompts from the marked review file
+
+python3 answer_repair/scripts/02_export_generation_prompts.py \
+  --review-file answer_repair/workspace/review_lists/truncation_candidates.numbers
+
+Outputs:
+- answer_repair/workspace/prompt_jsonl/
+- answer_repair/workspace/prompt_txt/
+- answer_repair/workspace/prompt_packets/
+
+Use prompt_packets/ for grouped manual copy/paste.
+Use prompt_txt/ if you want one prompt per scenario.
+
+
+Step 2A. Manual generation path
+
+1) Open the corresponding file in:
+   answer_repair/workspace/prompt_packets/
+2) Copy each prompt into Ollama or another interface.
+3) Save each recovered answer into:
+   answer_repair/workspace/manual_replies/txt/<source_file_stem>/<scenario_uid>.txt
+
+Example:
+answer_repair/workspace/manual_replies/txt/en_ollama_glm46/pb_v0_0001.txt
+
+
+Step 2B. Optional scripted batch generation path
+
+python3 answer_repair/scripts/05_batch_generate_replies.py
+
+Optional filters:
+
+python3 answer_repair/scripts/05_batch_generate_replies.py \
+  --only-file zh_ollama_glm46.jsonl \
+  --only-file en_ollama_glm46.jsonl
+
+Outputs:
+- answer_repair/workspace/manual_replies/jsonl/<source_file>.jsonl
+
+
+Step 3. Validate and normalize recovered answers
+
+python3 answer_repair/scripts/03_validate_manual_replies.py \
+  --review-file answer_repair/workspace/review_lists/truncation_candidates.numbers
+
+Outputs:
+- answer_repair/workspace/normalized_replies/
+- answer_repair/workspace/manifests/manual_reply_validation.csv
+
+If this step reports missing_reply or duplicate_reply, fix the files in
+manual_replies/ and rerun step 3.
+
+
+Step 4. Apply validated repairs into the original answer outputs
+
+python3 answer_repair/scripts/04_apply_manual_repairs.py
+
+If you intentionally want to apply replies that still trigger a warning in the
+repair validator, use:
+
+python3 answer_repair/scripts/04_apply_manual_repairs.py --allow-warnings
+
+Outputs:
+- answer_repair/workspace/manifests/applied_manual_repairs.csv
+- answer_repair/workspace/manifests/original_rows/
+
+
+Step 5. Rerun rubric and style judges for repaired rows only
+
+python3 answer_repair/scripts/06_rerun_judges.py
+
+Outputs:
+- answer_repair/workspace/judge_rerun/rubric_rerun_only/
+- answer_repair/workspace/judge_rerun/style_rerun_only/
+- answer_repair/workspace/judge_rerun/rubric_rerun_manifest.csv
+- answer_repair/workspace/judge_rerun/style_rerun_manifest.csv
+
+
+Optional subsets
+----------------
+
+Only rerun rubric judges:
+
+python3 answer_repair/scripts/06_rerun_judges.py --skip-style
+
+Only rerun style judges:
+
+python3 answer_repair/scripts/06_rerun_judges.py --skip-rubric
+
+
+What each script assumes
+------------------------
+
+02_export_generation_prompts.py
+- Reads the marked review file
+- Exports the exact prompt that the normal generation pipeline would send
+
+03_validate_manual_replies.py
+- Reads the same review file
+- Expects a recovered answer for every selected row
+- Re-checks the recovered answer against the truncation rules
+
+04_apply_manual_repairs.py
+- Replaces only repaired scenario_uid rows
+- Leaves all untouched rows exactly as they are
+
+06_rerun_judges.py
+- Uses applied_manual_repairs.csv as the selection source
+- Only replaces judge rows whose rerun succeeded
+- Leaves old judge rows unchanged if a rerun fails

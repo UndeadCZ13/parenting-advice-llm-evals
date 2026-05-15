@@ -1,0 +1,68 @@
+Truncation Rules Quick Guide
+============================
+
+All scan and validation logic reads:
+
+  answer_repair/config/truncation_rules.toml
+
+You can change that file directly to make the candidate detection stricter or
+looser.
+
+Review-file note
+----------------
+The later repair scripts can read either `.csv` or `.numbers` review files.
+If you mark `manual_action` as `1` inside Numbers, the script will also accept
+the stored numeric value `1.0`.
+
+Main rule groups
+----------------
+1. Hard candidate rules
+   These immediately place an answer into the review list.
+   Examples:
+   - empty answer
+   - API error present
+   - finish_reason = length
+   - answer shorter than the language-specific hard threshold
+
+2. Soft candidate rules
+   These are used for answers that look suspicious but are not obviously broken.
+   Examples:
+   - suspicious ending punctuation or dangling marker
+   - very short last fragment
+   - short total length combined with a weak ending
+   - legacy `suspected_truncation` flag plus another suspicious signal
+
+3. Language-specific thresholds
+   English and Chinese are handled separately.
+   In `truncation_rules.toml`, the most important editable fields are:
+
+   - `always_candidate_chars_le`
+   - `soft_review_chars_le`
+   - `max_last_fragment_words` (English)
+   - `max_last_fragment_chars` (Chinese)
+   - `sentence_end_chars`
+   - `suspicious_terminal_chars`
+
+Practical interpretation
+------------------------
+- English long-form mid-truncation is often not detectable by length alone.
+- Chinese has more genuine short-truncation cases, so the character thresholds
+  matter more there.
+- Missing terminal punctuation by itself is not treated as a strong enough
+  signal. It must combine with other evidence unless a hard rule already fires.
+
+Recommended editing pattern
+---------------------------
+- If too many false positives appear:
+  raise `soft_review_chars_le`
+  or lower `max_last_fragment_words` / `max_last_fragment_chars`
+  or remove a suspicious terminal character from the language section.
+
+- If too many obvious truncations are missed:
+  raise `soft_review_chars_le`
+  or raise `max_last_fragment_words` / `max_last_fragment_chars`
+  or add more symbols to `suspicious_terminal_chars`.
+
+After editing the TOML file, rerun:
+
+  python answer_repair/scripts/01_scan_candidates.py
