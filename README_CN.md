@@ -2,7 +2,7 @@
 
 一个面向研究与工程的 LLM 评测系统，用于在真实亲子沟通场景中系统评估模型的育儿建议能力，支持英文与中文双语。
 
-本仓库是牛津大学计算机科学 Part C 毕业论文《Evaluating Large Language Models for Supporting Digital Parenting》（Trinity Term 2026）的实现代码。
+本仓库是一个关于评估大语言模型支持数字育儿能力的研究项目实现代码。
 
 与只输出平均分的常规基准不同，本项目重点强调：
 
@@ -53,11 +53,11 @@ parenting-advice-llm-evals/
 ├── src/                            # 核心实现
 ├── answer_repair/                  # 定向重生成 + 重判
 │                                   #   （scripts/ + lib/ 在 repo；workspace/ 不在）
-├── redesign/                       # 仅含 chart_utils.py（论文 appendix A.3 引用）
+├── redesign/                       # 通用绘图辅助代码
 └── README.md
 ```
 
-本仓库**只包含框架与运作代码**。场景数据、生成/评分输出、分析产物、论文图表
+本仓库**只包含框架与运作代码**。场景数据、生成/评分输出、分析产物、图表
 中间件、以及 workspace 临时产物均不在版本控制中。获取或重建方式见第 3 节。
 
 ---
@@ -69,8 +69,8 @@ parenting-advice-llm-evals/
 `parentbench_v0` 前缀只是数据版本号，与本仓库身份无关，是为了兼容代码里的
 默认路径）。
 
-论文中使用的种子场景集改编自 [ParentBench 项目](https://parentbench.azurewebsites.net)
-（由 NGO Early Ideas 开发），仅在论文研究范围内得到使用授权。如需复现或扩展，
+本研究项目使用的种子场景集改编自 [ParentBench 项目](https://parentbench.azurewebsites.net)
+（由 NGO Early Ideas 开发），仅在研究范围内得到使用授权。如需复现或扩展，
 请直接联系 ParentBench 项目以获得相应授权。
 
 如果你有自己的育儿场景 Excel 表，`scripts/convert_scenarios_from_excel.py`
@@ -407,7 +407,7 @@ python scripts/markdown_to_docx.py \
 * `scripts/judge_existing_answers.sh` 含历史兼容分支，推荐优先使用 `scripts/run_multi_generation_and_judge.sh`。
 * CSV 物理行数可能大于逻辑记录数（`comment` 字段可能含换行），统计请以 DataFrame 行数为准。
 * 场景文件名里的历史前缀 `parentbench_v0` 仅是数据版本标识，与本仓库身份无关，保留只是为了与代码默认路径一致。
-* `redesign/chart_utils.py` 只是为了论文 appendix A.3 的代码引用而保留，并不是自包含的：它依赖的 `chart_config.py`、各章渲染器、图表输出目录都没有打包进 repo。
+* `redesign/chart_utils.py` 作为通用绘图辅助代码保留，并不是自包含的：它依赖的 `chart_config.py`、各章渲染器、图表输出目录都没有打包进 repo。
 
 ---
 
@@ -423,4 +423,4 @@ python scripts/markdown_to_docx.py \
 
 ## License
 
-仅用于研究与内部评测。如有基于本仓库的工作，请同时引用对应论文。
+仅用于研究与内部评测。如有基于本仓库的工作，请引用本仓库。

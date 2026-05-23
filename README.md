@@ -2,7 +2,7 @@
 
 A research- and engineering-oriented evaluation system for Large Language Models (LLMs), built to benchmark parenting-advice quality across realistic parent–child scenarios in English and Chinese.
 
-This repository contains the implementation behind the University of Oxford Computer Science Part C dissertation *Evaluating Large Language Models for Supporting Digital Parenting* (Trinity Term 2026).
+This repository contains the implementation for a research project on evaluating Large Language Models for supporting digital parenting.
 
 Compared with benchmark pipelines that only report average scores, this project is designed to be:
 
@@ -53,12 +53,12 @@ parenting-advice-llm-evals/
 ├── src/                            # core pipeline implementation
 ├── answer_repair/                  # targeted regeneration + re-judging
 │                                   #   (scripts/ + lib/ in repo; workspace/ not)
-├── redesign/                       # chart_utils.py only (referenced by thesis appendix A.3)
+├── redesign/                       # shared plotting helpers
 └── README.md
 ```
 
 This repository contains **framework and operational code only**.
-Scenario data, generation/judge outputs, analysis results, thesis-figure
+Scenario data, generation/judge outputs, analysis results, figure
 artefacts, and intermediate workspace files are deliberately excluded from
 version control. See Section 3 for how to obtain or regenerate them.
 
@@ -72,9 +72,9 @@ end-to-end you need to place a scenario file at
 `parentbench_v0` filename prefix is preserved for compatibility with the
 generation/judging code's default paths and refers only to the data version).
 
-The seed scenarios used in the associated dissertation were adapted from the
+The seed scenarios used in the associated research project were adapted from the
 [ParentBench project](https://parentbench.azurewebsites.net) (developed by
-NGO Early Ideas) with permission for that thesis. If you wish to reproduce
+NGO Early Ideas) with permission for this research use. If you wish to reproduce
 or extend this work, please contact the ParentBench project directly to
 obtain the scenario set under appropriate terms.
 
@@ -413,7 +413,7 @@ These directories are gitignored — fresh clones will be empty until you run th
 * `scripts/judge_existing_answers.sh` contains legacy branches; `scripts/run_multi_generation_and_judge.sh` is the recommended main orchestrator.
 * CSV physical line count may exceed logical row count because `comment` fields can contain embedded newlines. Use dataframe row count as ground truth.
 * The legacy `parentbench_v0` filename prefix on scenario `.jsonl` files is expected by default paths in the pipeline; it refers only to the data version and not to this repository's identity.
-* `redesign/chart_utils.py` is included as a reference for thesis appendix A.3 but is not self-contained: its supporting modules (`chart_config.py`, per-chapter renderers, chart output directories) are not bundled with the repository.
+* `redesign/chart_utils.py` is included as a plotting helper reference but is not self-contained: its supporting modules (`chart_config.py`, per-chapter renderers, chart output directories) are not bundled with the repository.
 
 ---
 
@@ -429,4 +429,4 @@ These directories are gitignored — fresh clones will be empty until you run th
 
 ## License
 
-Research and internal evaluation use only. Please cite the associated dissertation if you build on this work.
+Research and internal evaluation use only. Please cite this repository if you build on this work.

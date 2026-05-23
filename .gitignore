@@ -133,8 +133,8 @@ answer_repair/workspace/
 # Scenario data: see README for how to obtain
 data/scenarios/
 
-# Thesis-figure rendering artefacts and supporting scripts
-# (kept only chart_utils.py because the thesis appendix references it)
-docs/thesis_figures/
+# Figure rendering artefacts and supporting scripts
+# (kept only chart_utils.py as a shared plotting helper)
+docs/
 redesign/*
 !redesign/chart_utils.py
